@@ -1,5 +1,21 @@
 #!/bin/bash
 
+# 定义要添加的主机名和IP 到 /etc/hosts
+entries=(
+    "127.0.0.1       aospace-fileapi"
+    "127.0.0.1       aospace-redis"
+)
+# 遍历数组并检查每个条目是否已经存在于 /etc/hosts 中
+for entry in "${entries[@]}"; do
+    if ! grep -qF "$entry" /etc/hosts; then
+        echo "$entry" >> /etc/hosts
+        echo "Added: $entry"
+    else
+        echo "Already exists: $entry"
+    fi
+done
+
+
 # 启动 Redis
 redis-server --requirepass placeholder_mysecretpassword --appendonly yes --appendfsync everysec --auto-aof-rewrite-percentage 100 --auto-aof-rewrite-min-size 100mb &
 
