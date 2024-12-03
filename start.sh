@@ -11,6 +11,8 @@ fi
 # space-gateway
 echo "starting space-gateway... "
 
+source /aospace/opt/tmp/aospace-gateway.env || true
+
 export APP_BOX_PUBLIC_KEY_LOCATION=/aospace/etc/ao-space/box_key_pub.pem
 export APP_BOX_PRIVATE_KEY_LOCATION=/aospace/etc/ao-space/box_key.pem
 export APP_CLIENT_PUBLIC_KEY_LOCATION=/aospace/etc/ao-space/client_key_pub.pem
@@ -27,12 +29,24 @@ export APP_ACCOUNT_DATA_LOCATION=/aospace/opt/eulixspace/data/
 export MAX_INVITE_MEMBER_COUNT=9
 export APP_INTERNET_SERVICE_CONFIG=/aospace/etc/ao-space/internet_service_config.json
 
-source /aospace/opt/tmp/aospace-gateway.env
-export APP_BOX_BTID=$(jq -r '.btid' /aospace/etc/ao-space/box_info.json)
-export APP_SYSTEM_AGENT_URL_DEVICE_INFO=http://localhost:5680/agent/v1/api/device/info
-export APP_ACCOUNT_SYSTEM_AGENT_URL_DEVICE_INFO=http://localhost:5680/agent/v1/api/device/info
-export APP_SYSTEM_AGENT_URL_BASE=http://localhost:5680/agent/v1/api
+export APP_BOX_UUID=$(jq -r '.boxUuid' /aospace/etc/ao-space/box_info.json)
 export APP_SECURITY_API_URL=http://localhost:9200/security/v1/api
+export APP_BOX_KEYFINGERPRINT=$(openssl rsa -pubin -in /aospace/etc/ao-space/box_key_pub.pem -outform DER 2>/dev/null | openssl dgst -md5 -hex | awk '{print $2}')
+export APP_BOX_DEPLOY_METHOD=DockerBox
+export APP_PSPLATFORM_URL=https://ao.space
+export APP_ACCOUNT_SYSTEM_AGENT_URL_DEVICE_INFO=http://localhost:5680/agent/v1/api/device/info
+export APP_SYSTEM_AGENT_URL_DEVICE_INFO=http://localhost:5680/agent/v1/api/device/info
+export APP_BOX_SUPPORT_SECURITY_CHIP=false
+export APP_BOX_SUPPORT_EXTERNAL_DISK=false
+export APP_BOX_BTID=$(jq -r '.btid' /aospace/etc/ao-space/box_info.json)
+export APP_SSPLATFORM_URL=https://ao.space
+export APP_APPSTORE_APPSIGN_URL=https://auth.apps.ao.space
+export APP_APPSTORE_APPAPI_URL=https://api.apps.ao.space
+export APP_BOX_VERSION=0.9.0
+export APP_BOX_DEVICE_MODEL_NUMBER=-200
+export APP_SYSTEM_AGENT_URL_BASE=http://localhost:5680/agent/v1/api
+export APP_VERSION_TYPE=open_source
+
 nohup java -jar -Dquarkus.http.host=0.0.0.0 /deployments/quarkus-run.jar 2>&1 &
 
 # space-aofs
